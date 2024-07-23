@@ -1,3 +1,4 @@
+import { observer } from "mobx-react-lite";
 import { Circle, Layer, Rect, Stage } from "react-konva";
 import styled from "styled-components";
 
@@ -11,7 +12,7 @@ const CanvasStyles = {
   //   border: "2px solid yellow",
 };
 
-export const Canvas = () => {
+export const Canvas = observer(() => {
   // width must grow +1 innerWidth from the last element page on the page
   return (
     <Wrapper>
@@ -27,4 +28,4 @@ export const Canvas = () => {
       </Stage>
     </Wrapper>
   );
-};
+});

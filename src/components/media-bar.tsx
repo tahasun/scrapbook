@@ -1,5 +1,11 @@
 import { CSSProperties, Drawer, ModalBaseStylesNames } from "@mantine/core";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
+import FolderSpecialIcon from "@mui/icons-material/FolderSpecial";
+import styled from "styled-components";
+import { observer } from "mobx-react-lite";
+import { pageStore } from "../stores/pages.store";
+import _ from "lodash";
+import { PageListing } from "./page-listing";
 
 const BarStyles: Partial<Record<ModalBaseStylesNames, CSSProperties>> = {
   root: {
@@ -9,18 +15,17 @@ const BarStyles: Partial<Record<ModalBaseStylesNames, CSSProperties>> = {
     color: "black",
     zIndex: "99",
     height: "80vh",
-    width: "30vw",
+    width: "26vw",
   },
   content: {
-    border: "2px solid lightblue",
-    backgroundColor: "white",
     borderRadius: "0vw 2vw 2vw 0vw",
     height: "100%",
     width: "100%",
+    backgroundColor: "pink",
   },
   close: {
     backgroundColor: "transparent",
-    color: "lightblue",
+    color: "white",
     marginLeft: "auto",
   },
   inner: {
@@ -32,27 +37,45 @@ const BarStyles: Partial<Record<ModalBaseStylesNames, CSSProperties>> = {
   header: { display: "flex" },
 };
 
-export const MediaBar = ({
-  opened,
-  close,
-}: {
-  opened: boolean;
-  close: () => void;
-}) => {
-  return (
-    <Drawer
-      closeOnClickOutside={true}
-      closeOnEscape={true}
-      radius="md"
-      opened={opened}
-      onClose={close}
-      styles={BarStyles}
-      transitionProps={{ duration: 400, transition: "slide-right" }}
-      closeButtonProps={{
-        icon: <KeyboardDoubleArrowLeftIcon fontSize="large" />,
-      }}
-    >
-      Hello Kitty
-    </Drawer>
-  );
-};
+const ControlWrapper = styled.div`
+  padding: 0vh 0vw 2vw 2vw;
+`;
+
+const NavWrapper = styled.div``;
+
+export const MediaBar = observer(
+  ({ opened, close }: { opened: boolean; close: () => void }) => {
+    const handleAddPage = () => {
+      const id = _.uniqueId();
+      pageStore.addPage({ id, name: `Page ${pageStore.pages.length + 1}` });
+    };
+
+    return (
+      <Drawer
+        closeOnClickOutside={true}
+        closeOnEscape={true}
+        radius="md"
+        opened={opened}
+        onClose={close}
+        styles={BarStyles}
+        transitionProps={{ duration: 400, transition: "slide-right" }}
+        closeButtonProps={{
+          icon: <KeyboardDoubleArrowLeftIcon fontSize="large" />,
+        }}
+      >
+        <ControlWrapper>
+          <FolderSpecialIcon
+            fontSize="large"
+            style={{ color: "white" }}
+            onClick={handleAddPage}
+          />
+        </ControlWrapper>
+        <NavWrapper>
+          {pageStore.pages.map((page) => (
+            <PageListing key={page.id} page={page} />
+          ))}
+        </NavWrapper>
+      </Drawer>
+    );
+  }
+);

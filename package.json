@@ -18,12 +18,16 @@
     "@mui/material": "^5.16.4",
     "framer-motion": "^11.3.8",
     "konva": "^9.3.14",
+    "lodash": "^4.17.21",
+    "mobx": "^6.13.1",
+    "mobx-react-lite": "^4.0.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-konva": "^18.2.10",
     "styled-components": "^6.1.12"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.7",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.15.0",
