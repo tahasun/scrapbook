@@ -1,14 +1,9 @@
-import { Drawer, ModalBaseStylesNames } from "@mantine/core";
-import styled, { CSSProperties } from "styled-components";
+import { CSSProperties, Drawer, ModalBaseStylesNames } from "@mantine/core";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
-
-const Wrapper = styled.div``;
 
 const BarStyles: Partial<Record<ModalBaseStylesNames, CSSProperties>> = {
   root: {
     position: "absolute",
-    // border: "2px solid lightblue",
-
     top: "10vh",
     left: "0vw",
     color: "black",
@@ -25,7 +20,7 @@ const BarStyles: Partial<Record<ModalBaseStylesNames, CSSProperties>> = {
   },
   close: {
     backgroundColor: "transparent",
-    color: "red",
+    color: "lightblue",
     marginLeft: "auto",
   },
   inner: {
@@ -37,15 +32,6 @@ const BarStyles: Partial<Record<ModalBaseStylesNames, CSSProperties>> = {
   header: { display: "flex" },
 };
 
-const CloseButton = styled(KeyboardDoubleArrowLeftIcon)`
-  margin-left: auto;
-  color: black;
-
-  &:focus {
-    outline: none;
-  }
-`;
-
 export const MediaBar = ({
   opened,
   close,
@@ -53,23 +39,20 @@ export const MediaBar = ({
   opened: boolean;
   close: () => void;
 }) => {
-  console.log(opened);
   return (
-    <Wrapper>
-      <Drawer
-        closeOnClickOutside={true}
-        closeOnEscape={true}
-        // offset={8}
-        radius="md"
-        opened={opened}
-        onClose={close}
-        styles={BarStyles}
-        closeButtonProps={{
-          icon: <CloseButton fontSize="large" />,
-        }}
-      >
-        Hello Kitty
-      </Drawer>
-    </Wrapper>
+    <Drawer
+      closeOnClickOutside={true}
+      closeOnEscape={true}
+      radius="md"
+      opened={opened}
+      onClose={close}
+      styles={BarStyles}
+      transitionProps={{ duration: 400, transition: "slide-right" }}
+      closeButtonProps={{
+        icon: <KeyboardDoubleArrowLeftIcon fontSize="large" />,
+      }}
+    >
+      Hello Kitty
+    </Drawer>
   );
 };

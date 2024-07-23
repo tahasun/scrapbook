@@ -14,7 +14,7 @@ const MenuButton = styled.button<{ $hide: boolean }>`
   color: pink;
   background-color: transparent;
   padding: 0;
-  visibility: ${({ $hide }) => ($hide ? "hidden" : "visible")};
+  opacity: ${({ $hide }) => ($hide ? "0" : "1")};
 
   &:focus,
   &:hover,
