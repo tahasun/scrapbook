@@ -2,7 +2,7 @@ import { action, makeObservable, observable } from "mobx";
 
 export interface Page {
   id: string;
-  name: string;
+  title: string;
 }
 
 class PageStore {
@@ -18,6 +18,8 @@ class PageStore {
       addPage: action,
       removePage: action,
     });
+
+    (window as any).pageStore = this;
   }
 
   addPage(item: Page) {
@@ -28,13 +30,9 @@ class PageStore {
     this.pages = this.pages.filter((item) => item.id != id);
   }
 
-  renamePage(id: string, newName: string): boolean {
-    const pageToRename = this.pages.find((page) => (page.id = id));
-    if (pageToRename == null) {
-      return false;
-    }
-    pageToRename.name = newName;
-    return true;
+  renamePage(id: string, newName: string) {
+    const newPage = { id: id, title: newName };
+    this.pages = this.pages.map((p) => (p.id == id ? newPage : p));
   }
 }
 

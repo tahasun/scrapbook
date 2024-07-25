@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import styled, { css } from "styled-components";
 import { Page, pageStore } from "../stores/pages.store";
 import { observer } from "mobx-react-lite";
@@ -50,6 +50,7 @@ const TextEditor = styled.input.attrs({ type: "text" })<{ $editing: boolean }>`
   background-color: white;
   color: red;
   font-weight: 600;
+  cursor: auto;
 
   &:focus-visible {
     outline: none;
@@ -59,27 +60,42 @@ const TextEditor = styled.input.attrs({ type: "text" })<{ $editing: boolean }>`
 
 export const PageListing = observer(({ page }: { page: Page }) => {
   const [inFocus, setInFocus] = useState<boolean>(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleRename = (newName: string) => {
-    console.log("val", newName);
     pageStore.renamePage(page.id, newName);
+  };
+
+  const handleEnterPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key == "Enter") {
+      inputRef.current?.blur();
+    }
+  };
+
+  const handleRemove = () => {
+    pageStore.removePage(page.id);
   };
 
   return (
     <Wrapper>
       <EditableTextWrapper>
-        <EditableText $editing={inFocus}>{page.name}</EditableText>
+        <EditableText $editing={inFocus}>{page.title}</EditableText>
         <TextEditor
+          ref={inputRef}
           type="text"
+          autoFocus={inFocus}
           onFocus={() => setInFocus(true)}
           onBlur={() => setInFocus(false)}
           onChange={(e) => handleRename(e.target.value)}
           $editing={inFocus}
+          onKeyDown={(e) => handleEnterPress(e)}
         ></TextEditor>
       </EditableTextWrapper>
       <div style={{ marginLeft: "auto" }}>
-        <ControlButton>rename</ControlButton>
-        <ControlButton>remove</ControlButton>
+        <ControlButton onClick={() => inputRef.current?.focus()}>
+          rename
+        </ControlButton>
+        <ControlButton onClick={handleRemove}>remove</ControlButton>
       </div>
     </Wrapper>
   );

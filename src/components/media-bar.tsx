@@ -47,7 +47,7 @@ export const MediaBar = observer(
   ({ opened, close }: { opened: boolean; close: () => void }) => {
     const handleAddPage = () => {
       const id = _.uniqueId();
-      pageStore.addPage({ id, name: `Page ${pageStore.pages.length + 1}` });
+      pageStore.addPage({ id, title: "New Page" });
     };
 
     return (
