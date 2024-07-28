@@ -5,7 +5,10 @@ import styled from "styled-components";
 import { observer } from "mobx-react-lite";
 import { pageStore } from "../stores/pages.store";
 import _ from "lodash";
-import { PageListing } from "./page-listing";
+import { PageListing, TextStyles } from "./page-listing";
+import { MediaUploader } from "./media-uploader";
+import { Tabs, rem } from "@mantine/core";
+import PermMediaIcon from "@mui/icons-material/PermMedia";
 
 const BarStyles: Partial<Record<ModalBaseStylesNames, CSSProperties>> = {
   root: {
@@ -37,11 +40,30 @@ const BarStyles: Partial<Record<ModalBaseStylesNames, CSSProperties>> = {
   header: { display: "flex" },
 };
 
-const ControlWrapper = styled.div`
+const Divider = styled.div`
   padding: 0vh 0vw 2vw 2vw;
+  border-bottom: 4px solid white;
 `;
 
 const NavWrapper = styled.div``;
+
+const AddPageButton = styled.div`
+  padding: 1vh 2vw;
+  color: white;
+  border-bottom: 4px solid white;
+  ${TextStyles}
+`;
+
+const TabStyles = {
+  tab: {
+    backgroundColor: "transparent",
+  },
+};
+
+enum CONTROLS {
+  EXPLORE = "explore",
+  GALLERY = "gallery",
+}
 
 export const MediaBar = observer(
   ({ opened, close }: { opened: boolean; close: () => void }) => {
@@ -63,18 +85,31 @@ export const MediaBar = observer(
           icon: <KeyboardDoubleArrowLeftIcon fontSize="large" />,
         }}
       >
-        <ControlWrapper>
-          <FolderSpecialIcon
-            fontSize="large"
-            style={{ color: "white" }}
-            onClick={handleAddPage}
-          />
-        </ControlWrapper>
-        <NavWrapper>
-          {pageStore.pages.map((page) => (
-            <PageListing key={page.id} page={page} />
-          ))}
-        </NavWrapper>
+        <Tabs defaultValue={CONTROLS.EXPLORE} styles={TabStyles}>
+          <Tabs.List>
+            <Tabs.Tab value={CONTROLS.EXPLORE}>
+              <FolderSpecialIcon fontSize="large" style={{ color: "white" }} />
+            </Tabs.Tab>
+            <Tabs.Tab value={CONTROLS.GALLERY}>
+              <PermMediaIcon fontSize="large" style={{ color: "white" }} />
+            </Tabs.Tab>
+          </Tabs.List>
+
+          <Divider />
+
+          <Tabs.Panel value={CONTROLS.EXPLORE}>
+            <AddPageButton onClick={handleAddPage}>Add Page +</AddPageButton>
+            <NavWrapper>
+              {pageStore.pages.map((page) => (
+                <PageListing key={page.id} page={page} />
+              ))}
+            </NavWrapper>
+          </Tabs.Panel>
+
+          <Tabs.Panel value={CONTROLS.GALLERY}>
+            <MediaUploader />
+          </Tabs.Panel>
+        </Tabs>
       </Drawer>
     );
   }

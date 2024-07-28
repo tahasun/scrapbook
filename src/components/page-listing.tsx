@@ -16,7 +16,7 @@ const ControlButton = styled.button`
   padding-left: 0.6vw;
 `;
 
-const TextStyles = css`
+export const TextStyles = css`
   font-family: inherit;
   font-size: 1.2em;
   text-overflow: ellipsis;

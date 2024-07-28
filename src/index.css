@@ -14,6 +14,10 @@
   -moz-osx-font-smoothing: grayscale;
 
   --black: rgb(53, 57, 53);
+  --primary: pink;
+  --dark-tint: rgba(111, 143, 175, 1);
+  --light-tint: rgba(182, 208, 226, 0.8);
+  --left-offset: 2vw;
 }
 
 a {
