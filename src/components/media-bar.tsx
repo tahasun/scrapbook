@@ -3,7 +3,7 @@ import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrow
 import FolderSpecialIcon from "@mui/icons-material/FolderSpecial";
 import styled from "styled-components";
 import { observer } from "mobx-react-lite";
-import { pageStore } from "../stores/pages.store";
+import { pageStore } from "../stores/page.store";
 import _ from "lodash";
 import { PageListing, TextStyles } from "./page-listing";
 import { MediaUploader } from "./media-uploader";

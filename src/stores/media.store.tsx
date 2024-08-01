@@ -1,5 +1,6 @@
 import _ from "lodash";
 import { action, computed, makeObservable, observable } from "mobx";
+// import { makePersistable } from "mobx-persist-store";
 
 class MediaStore {
   media: File[];
@@ -11,6 +12,12 @@ class MediaStore {
       addMedia: action,
       images: computed,
     });
+
+    // makePersistable(this, {
+    //   name: "MediaStore",
+    //   properties: ["media"],
+    //   storage: window.localStorage,
+    // });
   }
 
   addMedia(files: File[]) {

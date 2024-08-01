@@ -1,6 +1,8 @@
 import { observer } from "mobx-react-lite";
-import { Circle, Layer, Rect, Stage } from "react-konva";
+import { Circle, Layer, Rect, Stage, Image } from "react-konva";
 import styled from "styled-components";
+import useImage from "use-image";
+import { pageStore } from "../stores/page.store";
 
 const Wrapper = styled.div`
   overflow-y: hidden;
@@ -17,6 +19,26 @@ const CanvasStyles = {
 // given the page, render the layers associated with it
 export const Canvas = observer(() => {
   // width must grow +1 innerWidth from the last element page on the page
+
+  const [image] = useImage("https://konvajs.org/assets/lion.png");
+  pageStore.addObject(pageStore.pages[0].id, "", {
+    image,
+    x: 500,
+    y: 100,
+    width: 100,
+    height: 100,
+  });
+
+  pageStore.addObject(pageStore.pages[1].id, "", {
+    image,
+    x: 100,
+    y: 200,
+    width: 100,
+    height: 100,
+  });
+
+  const layers = pageStore.currentLayer;
+
   return (
     <Wrapper>
       <Stage
@@ -24,12 +46,22 @@ export const Canvas = observer(() => {
         height={window.innerHeight}
         style={CanvasStyles}
       >
-        <Layer>
-          <Rect width={50} height={50} x={100} y={200} fill="red" />
+        {/* <Layer>
+          <Image image={image} x={500} y={100} width={100} height={100} />
         </Layer>
         <Layer>
-          <Circle x={200} y={200} stroke="black" radius={50} />
-        </Layer>
+          <Image
+            image={image}
+            x={100}
+            y={200}
+            width={100}
+            height={100}
+            fill="red"
+          />
+        </Layer> */}
+        {layers?.map((layer) => (
+          <Layer>{layer.objects.map((obj) => {})}</Layer>
+        ))}
       </Stage>
     </Wrapper>
   );

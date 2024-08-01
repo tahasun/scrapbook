@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import styled, { css } from "styled-components";
-import { Page, pageStore } from "../stores/pages.store";
+import { Page, pageStore } from "../stores/page.store";
 import { observer } from "mobx-react-lite";
 
 const Wrapper = styled.div`
