@@ -1,8 +1,10 @@
 import { observer } from "mobx-react-lite";
-import { Circle, Layer, Rect, Stage, Image } from "react-konva";
+import { Circle, Layer, Rect, Stage, Image, Group } from "react-konva";
 import styled from "styled-components";
 import useImage from "use-image";
 import { pageStore } from "../stores/page.store";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { KImage, KObject } from "../utils/types/konva-types";
 
 const Wrapper = styled.div`
   overflow-y: hidden;
@@ -17,27 +19,24 @@ const CanvasStyles = {
 // so if i can keep track of layer ids and a way to render the layers on demand
 // switching pages: each page object has a collection of ids
 // given the page, render the layers associated with it
+
+// todo: width must grow +1 innerWidth from the last element page on the page
+
 export const Canvas = observer(() => {
-  // width must grow +1 innerWidth from the last element page on the page
+  const layers = useMemo(() => {
+    // console.log(pageStore.curPage, pageStore.layers);
+    return pageStore.curPage != null ? pageStore.layers[pageStore.curPage] : [];
+  }, [pageStore.curPage, pageStore.layers]);
 
-  const [image] = useImage("https://konvajs.org/assets/lion.png");
-  pageStore.addObject(pageStore.pages[0].id, "", {
-    image,
-    x: 500,
-    y: 100,
-    width: 100,
-    height: 100,
-  });
-
-  pageStore.addObject(pageStore.pages[1].id, "", {
-    image,
-    x: 100,
-    y: 200,
-    width: 100,
-    height: 100,
-  });
-
-  const layers = pageStore.currentLayer;
+  // todo: we need to figure out how to extract the images that we need into image elements
+  // to be consumed by the Konva Canvas Image Obj
+  const images = useMemo(() => {
+    const urls = layers.forEach((layer) => {
+      return layer.objects
+        .filter((obj) => obj.url != null)
+        .map((obj) => obj.url);
+    });
+  }, [pageStore.curPage]);
 
   return (
     <Wrapper>
@@ -46,22 +45,24 @@ export const Canvas = observer(() => {
         height={window.innerHeight}
         style={CanvasStyles}
       >
-        {/* <Layer>
-          <Image image={image} x={500} y={100} width={100} height={100} />
-        </Layer>
-        <Layer>
-          <Image
-            image={image}
-            x={100}
-            y={200}
-            width={100}
-            height={100}
-            fill="red"
-          />
-        </Layer> */}
-        {layers?.map((layer) => (
-          <Layer>{layer.objects.map((obj) => {})}</Layer>
-        ))}
+        {layers?.map((layer) => {
+          return (
+            <Layer key={layer.id}>
+              {layer.objects.map((obj) => {
+                const [imgEl] = useImage(obj.url);
+                return (
+                  <Image
+                    image={imgEl}
+                    x={obj.x}
+                    y={obj.y}
+                    width={obj.width}
+                    height={obj.height}
+                  />
+                );
+              })}
+            </Layer>
+          );
+        })}
       </Stage>
     </Wrapper>
   );

@@ -7,6 +7,7 @@ const KImageSchema = z.object({
     y: z.number().optional(),
     width: z.number().optional(),
     height: z.number().optional(),
+    url: z.string().optional(),
   });
   
 const KTextSchema = z.object({
@@ -24,8 +25,8 @@ const KTextSchema = z.object({
     textDecoration: z.string().optional(),
   });
 
-  type KImage = z.infer<typeof KImageSchema>;
-  type KText = z.infer<typeof KTextSchema>;
+  export type KImage = z.infer<typeof KImageSchema>;
+  export type KText = z.infer<typeof KTextSchema>;
 
   export type KObject = KImage | KText;
 

@@ -1,6 +1,6 @@
 import { action, makeObservable, observable } from "mobx";
 import { makePersistable } from "mobx-persist-store";
-import { KObject } from "../utils/types/konva-types";
+import { KImage, KObject, KText } from "../utils/types/konva-types";
 import _ from "lodash";
 
 export interface Page {
@@ -11,7 +11,7 @@ export interface Page {
 interface Layer {
   id: string;
   pageId: string;
-  objects: KObject[];
+  objects: (KImage | KText)[];
 }
 
 class PageStore {
@@ -23,6 +23,10 @@ class PageStore {
     this.curPage = null;
     this.pages = [];
     this.layers = {};
+    // this.pages.push({ id: "1", title: "Tokyo" });
+    // this.pages.push({ id: "2", title: "Kyoto" });
+    // const layer1 = this.addLayer(this.pages[0].id);
+    // const layer2 = this.addLayer(this.pages[1].id);
 
     makeObservable(this, {
       curPage: observable,
@@ -30,6 +34,9 @@ class PageStore {
       layers: observable,
       addPage: action,
       removePage: action,
+      renamePage: action,
+      addLayer: action,
+      addObject: action,
     });
 
     makePersistable(this, {
@@ -60,8 +67,19 @@ class PageStore {
     }
   }
 
+  addLayer(pageId: string): string {
+    const newLayer = { id: _.uniqueId(), pageId, objects: [] };
+    if (this.layers[pageId] == null) {
+      this.layers[pageId] = [newLayer];
+    } else {
+      const prev = this.layers[pageId];
+      this.layers[pageId] = [...prev, newLayer];
+    }
+    return newLayer.id;
+  }
+
   addObject(pageId: string, layerId: string, object: KObject) {
-    // page exists?
+    // layer exist  exists?
     if (this.layers[pageId] == null) {
       throw new Error(`page ${pageId} does not exist`);
     }

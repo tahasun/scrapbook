@@ -14,6 +14,7 @@ const ControlButton = styled.button`
   background-color: transparent;
   padding: 0;
   padding-left: 0.6vw;
+  color: var(--dark-tint);
 `;
 
 export const TextStyles = css`
@@ -77,7 +78,14 @@ export const PageListing = observer(({ page }: { page: Page }) => {
   };
 
   return (
-    <Wrapper>
+    <Wrapper onClick={() => (pageStore.curPage = page.id)}>
+      {pageStore.curPage == page.id && (
+        <span
+          style={{ color: "white", paddingRight: "1vw", fontSize: "1.2em" }}
+        >
+          ★
+        </span>
+      )}
       <EditableTextWrapper>
         <EditableText $editing={inFocus}>{page.title}</EditableText>
         <TextEditor

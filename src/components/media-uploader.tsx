@@ -44,7 +44,7 @@ const FileInputStyles = {
   },
 };
 
-interface Image {
+export interface Image {
   id: string;
   name: string;
   url: string;
@@ -109,7 +109,7 @@ export const MediaUploader = observer(() => {
       </Wrapper>
       <TileGrid>
         {images.map((img) => (
-          <Tile imgSrc={img.url} key={img.id} />
+          <Tile img={img} key={img.id} />
         ))}
       </TileGrid>
     </>
