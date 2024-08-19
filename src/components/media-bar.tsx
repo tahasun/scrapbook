@@ -9,6 +9,8 @@ import { PageListing, TextStyles } from "./page-listing";
 import { MediaUploader } from "./media-uploader";
 import { Tabs, rem } from "@mantine/core";
 import PermMediaIcon from "@mui/icons-material/PermMedia";
+import { useQuery } from "@tanstack/react-query";
+import { mediaStore } from "../stores/media.store";
 
 const BarStyles: Partial<Record<ModalBaseStylesNames, CSSProperties>> = {
   root: {
@@ -71,6 +73,11 @@ export const MediaBar = observer(
       const id = _.uniqueId();
       pageStore.addPage({ id, title: "New Page" });
     };
+
+    const { data, error } = useQuery({
+      queryKey: ["s3Bucket"],
+      queryFn: mediaStore.retrieveFiles,
+    });
 
     return (
       <Drawer

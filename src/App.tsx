@@ -5,6 +5,13 @@ import { MediaBar } from "./components/media-bar";
 import { useDisclosure } from "@mantine/hooks";
 import { styled } from "styled-components";
 import MenuIcon from "@mui/icons-material/Menu";
+import React, { useEffect } from "react";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from "@tanstack/react-query";
+import { mediaStore } from "./stores/media.store";
 
 const MenuButton = styled.button<{ $hide: boolean }>`
   position: absolute;
@@ -24,19 +31,27 @@ const MenuButton = styled.button<{ $hide: boolean }>`
   }
 `;
 
+const queryClient = new QueryClient();
+
 function App() {
   const [opened, { open, close }] = useDisclosure(false);
 
+  // useEffect(() => {
+  //   mediaStore.initializeS3client();
+  // });
+
   return (
-    <MantineProvider>
-      <>
-        <Canvas />
-        <MenuButton onClick={open} $hide={opened}>
-          <MenuIcon fontSize="large" />
-        </MenuButton>
-        <MediaBar opened={opened} close={close} />
-      </>
-    </MantineProvider>
+    <QueryClientProvider client={queryClient}>
+      <MantineProvider>
+        <>
+          <Canvas />
+          <MenuButton onClick={open} $hide={opened}>
+            <MenuIcon fontSize="large" />
+          </MenuButton>
+          <MediaBar opened={opened} close={close} />
+        </>
+      </MantineProvider>
+    </QueryClientProvider>
   );
 }
 

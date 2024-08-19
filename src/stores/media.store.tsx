@@ -1,23 +1,25 @@
 import _ from "lodash";
 import { action, computed, makeObservable, observable } from "mobx";
-// import { makePersistable } from "mobx-persist-store";
+import { getFiles, uploadFile } from "../awsService";
+import { S3Client } from "@aws-sdk/client-s3";
 
 class MediaStore {
   media: File[];
 
+  client: S3Client;
+  isClientCreated = false;
+  isUploading = false;
+  uploadProgress = 0;
+  error = null;
+
   constructor() {
     this.media = [];
+
     makeObservable(this, {
       media: observable,
       addMedia: action,
       images: computed,
     });
-
-    // makePersistable(this, {
-    //   name: "MediaStore",
-    //   properties: ["media"],
-    //   storage: window.localStorage,
-    // });
   }
 
   addMedia(files: File[]) {
@@ -30,6 +32,27 @@ class MediaStore {
       name: file.name,
       url: URL.createObjectURL(file),
     }));
+  }
+
+  async uploadFile(file: Blob) {
+    try {
+      this.isUploading = true;
+      await uploadFile(file);
+    } catch (error) {
+      this.error = error;
+    } finally {
+      this.isUploading = false;
+    }
+  }
+
+  async retrieveFiles() {
+    try {
+      const files = await getFiles();
+      return files;
+    } catch (error) {
+      console.log("err", error);
+      this.error = error;
+    }
   }
 }
 

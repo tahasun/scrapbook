@@ -45,7 +45,7 @@ export const Canvas = observer(() => {
         height={window.innerHeight}
         style={CanvasStyles}
       >
-        {layers?.map((layer) => {
+        {/* {layers?.map((layer) => {
           return (
             <Layer key={layer.id}>
               {layer.objects.map((obj) => {
@@ -62,7 +62,7 @@ export const Canvas = observer(() => {
               })}
             </Layer>
           );
-        })}
+        })} */}
       </Stage>
     </Wrapper>
   );
