@@ -6,6 +6,8 @@ import { FileInput } from "@mantine/core";
 import { observer } from "mobx-react-lite";
 import { mediaStore } from "../stores/media.store";
 import _ from "lodash";
+import React from "react";
+import { useQuery } from "@tanstack/react-query";
 
 const Wrapper = styled.div`
   height: 18vh;
@@ -54,13 +56,9 @@ interface Media {
   name: string;
   size: number;
   type: string;
-  // lastModifiedDate: Date,
   lastModified: number;
   file: File;
 }
-
-// todo: upload files via the button [done]
-// todo: parse file stream and preview the images
 
 export const MediaUploader = observer(() => {
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -71,7 +69,7 @@ export const MediaUploader = observer(() => {
 
   const uploadMedia = useCallback(
     (files: File[]) => {
-      mediaStore.addMedia(files);
+      mediaStore.uploadFile(files[0].name, files[0]);
     },
     [mediaStore]
   );
@@ -83,8 +81,30 @@ export const MediaUploader = observer(() => {
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
   };
+  const { data: fileList, error } = useQuery({
+    queryKey: ["s3Bucket"],
+    queryFn: mediaStore.retrieveFiles,
+  });
 
-  const images: Image[] = mediaStore.images;
+  console.log("s3 list", fileList, error);
+
+  const { data } = useQuery({
+    queryKey: ["images"],
+    queryFn: async () => {
+      // const imgs = [];
+      // fileList?.Contents?.forEach(async (f) => {
+      //   const img = await mediaStore.downloadImg(f.Key);
+      //   if(img != null){
+      //     imgs.push(img);
+      //   }
+      // });
+      console.log("downloding...");
+      return await mediaStore.downloadImg(fileList?.Contents?.[1].Key);
+    },
+  });
+
+  console.log(data, JSON.parse(JSON.stringify(mediaStore.media)));
+  const images = mediaStore.media;
 
   return (
     <>
@@ -115,5 +135,3 @@ export const MediaUploader = observer(() => {
     </>
   );
 });
-
-<img src="blob:http://localhost:5173/a40fd4b1-3867-471c-8b3c-547501595817"></img>;

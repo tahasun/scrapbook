@@ -36,10 +36,6 @@ const queryClient = new QueryClient();
 function App() {
   const [opened, { open, close }] = useDisclosure(false);
 
-  // useEffect(() => {
-  //   mediaStore.initializeS3client();
-  // });
-
   return (
     <QueryClientProvider client={queryClient}>
       <MantineProvider>
