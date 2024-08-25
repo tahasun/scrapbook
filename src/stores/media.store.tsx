@@ -53,7 +53,6 @@ class MediaStore {
 
   addMedia(img: Image) {
     if (this.media[img.id] == null) {
-      console.log(img.key);
       this.media[img.id] = img;
     }
   }
@@ -62,17 +61,20 @@ class MediaStore {
     this.mediaKeys.add(key);
   }
 
-  async uploadFile(key: string, file: Blob) {
+  async uploadFile(name: string, file: Blob) {
     try {
       this.isUploading = true;
-      await uploadFile(key, file);
+      await uploadFile(name, file);
     } catch (error) {
       this.error = error;
     } finally {
       this.isUploading = false;
+      this.addKey(`images/${name}`);
     }
   }
 
+  //TODO: retrive files in order of latest uploaded -> oldest
+  // configure s3 bucket or just reorder programattically
   async retrieveFiles(): Promise<boolean> {
     try {
       const files = await getFiles().then((collection) => {

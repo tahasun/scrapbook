@@ -68,11 +68,8 @@ export const MediaUploader = observer(() => {
     e.preventDefault();
   };
 
-  useEffect(() => {}, []);
-
-  // todo: download 6 thumnails at a time with infinte query
-  const { data } = useQuery({
-    queryKey: ["images"],
+  useQuery({
+    queryKey: ["downloadedimages", mediaStore.mediaKeys.size],
     queryFn: async () => {
       mediaStore.mediaKeys.forEach(async (key) => {
         await mediaStore.downloadImg(key);
