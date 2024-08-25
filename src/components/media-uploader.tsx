@@ -1,7 +1,7 @@
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import styled from "styled-components";
 import { Tile, TileGrid } from "./media-preview-tile";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { FileInput } from "@mantine/core";
 import { observer } from "mobx-react-lite";
 import { mediaStore } from "../stores/media.store";
@@ -46,20 +46,6 @@ const FileInputStyles = {
   },
 };
 
-export interface Image {
-  id: string;
-  name: string;
-  url: string;
-}
-
-interface Media {
-  name: string;
-  size: number;
-  type: string;
-  lastModified: number;
-  file: File;
-}
-
 export const MediaUploader = observer(() => {
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -81,29 +67,20 @@ export const MediaUploader = observer(() => {
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
   };
-  const { data: fileList, error } = useQuery({
-    queryKey: ["s3Bucket"],
-    queryFn: mediaStore.retrieveFiles,
-  });
 
-  console.log("s3 list", fileList, error);
+  useEffect(() => {}, []);
 
+  // todo: download 6 thumnails at a time with infinte query
   const { data } = useQuery({
     queryKey: ["images"],
     queryFn: async () => {
-      // const imgs = [];
-      // fileList?.Contents?.forEach(async (f) => {
-      //   const img = await mediaStore.downloadImg(f.Key);
-      //   if(img != null){
-      //     imgs.push(img);
-      //   }
-      // });
-      console.log("downloding...");
-      return await mediaStore.downloadImg(fileList?.Contents?.[1].Key);
+      mediaStore.mediaKeys.forEach(async (key) => {
+        await mediaStore.downloadImg(key);
+      });
+      return true;
     },
   });
 
-  console.log(data, JSON.parse(JSON.stringify(mediaStore.media)));
   const images = mediaStore.media;
 
   return (
@@ -128,7 +105,7 @@ export const MediaUploader = observer(() => {
         </UploadZone>
       </Wrapper>
       <TileGrid>
-        {images.map((img) => (
+        {Object.values(images).map((img) => (
           <Tile img={img} key={img.id} />
         ))}
       </TileGrid>

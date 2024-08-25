@@ -1,8 +1,8 @@
 import styled from "styled-components";
-import { Image } from "./media-uploader";
 import { observer } from "mobx-react-lite";
 import { pageStore } from "../stores/page.store";
 import React from "react";
+import { Image } from "../stores/media.store";
 
 const Wrapper = styled.div`
   height: 10vh;

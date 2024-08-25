@@ -1,15 +1,35 @@
 import _ from "lodash";
-import { action, computed, makeObservable, observable } from "mobx";
+import {
+  action,
+  computed,
+  makeAutoObservable,
+  makeObservable,
+  observable,
+} from "mobx";
 import { getFiles, uploadFile, downloadFile } from "../awsService";
 import { S3Client } from "@aws-sdk/client-s3";
 import { uint8ArrayToBase64 } from "../utils/types/transformers";
-import { Image } from "../components/media-uploader";
-// thumbnails
+
+// TODO: thumbnails for preview
 // need to resize thumbnails and store it in local storage
 // needs to be accessed quite frequently
+export interface Image {
+  id: string;
+  key: string;
+  url: string;
+}
+
+interface Media {
+  name: string;
+  size: number;
+  type: string;
+  lastModified: number;
+  file: File;
+}
 
 class MediaStore {
-  media: Image[];
+  media: Record<string, Image>;
+  mediaKeys: Set<string>;
 
   client: S3Client;
   isClientCreated = false;
@@ -18,26 +38,29 @@ class MediaStore {
   error = null;
 
   constructor() {
-    this.media = [];
+    this.media = {};
+    this.mediaKeys = new Set();
 
     makeObservable(this, {
       media: observable,
+      mediaKeys: observable,
       addMedia: action,
-      // images: computed,
+      addKey: action,
+      retrieveFiles: action.bound,
+      downloadImg: action.bound,
     });
   }
 
-  addMedia(file: Image) {
-    this.media.push(file);
+  addMedia(img: Image) {
+    if (this.media[img.id] == null) {
+      console.log(img.key);
+      this.media[img.id] = img;
+    }
   }
 
-  // get images() {
-  //   return this.media.map((file: File) => ({
-  //     id: _.uniqueId(),
-  //     name: file.name,
-  //     url: URL.createObjectURL(file),
-  //   }));
-  // }
+  addKey(key: string) {
+    this.mediaKeys.add(key);
+  }
 
   async uploadFile(key: string, file: Blob) {
     try {
@@ -50,16 +73,28 @@ class MediaStore {
     }
   }
 
-  async retrieveFiles() {
+  async retrieveFiles(): Promise<boolean> {
     try {
-      const files = await getFiles();
-      return files;
+      const files = await getFiles().then((collection) => {
+        collection?.Contents?.forEach((img) => {
+          if (img.Key != null) {
+            const [dir, file] = img.Key?.split("/");
+            if (file != null && file != "" && dir == "images") {
+              this.addKey(img.Key);
+            }
+          }
+        });
+        return collection;
+      });
+      return true;
     } catch (error) {
       console.log("err", error);
       this.error = error;
+      return false;
     }
   }
 
+  // we want to download a small portion at a time instead of the entire collection
   async downloadImg(key: string | undefined): Promise<boolean> {
     if (key == null) {
       return false;
@@ -71,9 +106,8 @@ class MediaStore {
 
       const base64String = uint8ArrayToBase64(uint8Arr);
       const src = `data:image/png;base64,${base64String}`;
-      const n = key.split("/")[1];
 
-      this.addMedia({ name: n, id: "", url: src });
+      this.addMedia({ key: key, id: key, url: src });
 
       return true;
     } catch (error) {

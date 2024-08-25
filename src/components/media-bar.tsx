@@ -75,6 +75,11 @@ export const MediaBar = observer(
       pageStore.addPage({ id, title: "New Page" });
     };
 
+    const { error } = useQuery({
+      queryKey: ["s3Bucket"],
+      queryFn: mediaStore.retrieveFiles,
+    });
+
     return (
       <Drawer
         closeOnClickOutside={true}
