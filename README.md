@@ -1,5 +1,5 @@
 # Description
-Digital Diary
+Digital Diary with image storage
 
 
 ## Tech Stack
